@@ -3,7 +3,7 @@ png2bclim
 
 BCLIM Converter (to/from PNG)
 
-![alt tag](http://i.snag.gy/dMY1z.jpg)
+![alt tag](http://i.cubeupload.com/5spMqp.png)
 
 Drag & Drop (or via the Open Button) to convert a PNG to BCLIM.
 Output format should be specified via the ComboBox dropdowns.
