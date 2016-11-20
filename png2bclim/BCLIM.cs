@@ -660,9 +660,9 @@ namespace CTR
         {
             int val = 0;
             // val += c.A >> 8; // unused
-            val += convert8to5(c.B) >> 3;
+            val += convert8to5(c.R) >> 3;
             val += (c.G >> 2) << 5;
-            val += convert8to5(c.R) << 10;
+            val += convert8to5(c.B) << 10;
             return (ushort)val;
         }  // RGB565
         // RGB8
