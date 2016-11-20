@@ -4,6 +4,7 @@ using System.IO;
 using System.Drawing;
 using System.Windows.Forms;
 using CTR;
+using System.Runtime.InteropServices;
 
 namespace png2bclim
 {
@@ -15,6 +16,59 @@ namespace png2bclim
             CB_OutFormat.SelectedIndex = 10; // 9 - RGBA8888
             CB_Shape.SelectedIndex = 0; // 0 - Rectangle (>64)
         }
+
+        #region Flat GUI
+        #region Import necessary DLL's
+        public const int WM_NCLBUTTONDOWN = 0xA1;
+        public const int HT_CAPTION = 0x2;
+        [DllImport("user32.dll")]
+        public static extern int SendMessage(IntPtr hWnd, int Msg, int wParam, int lParam);
+        [DllImport("user32.dll")]
+        public static extern bool ReleaseCapture();
+        #endregion
+
+        #region Minimize Button
+        private void minimize_MouseEnter(object sender, EventArgs e)
+        {
+            minimize.Image = Properties.Resources.minimize_hover;
+        }
+        private void minimize_MouseLeave(object sender, EventArgs e)
+        {
+            minimize.Image = Properties.Resources.minimize;
+        }
+        private void minimize_Click(object sender, EventArgs e)
+        {
+            WindowState = FormWindowState.Minimized;
+        }
+        #endregion
+
+        #region Close Button
+        private void close_MouseEnter(object sender, EventArgs e)
+        {
+            close.Image = Properties.Resources.close_hover;
+        }
+        private void close_MouseLeave(object sender, EventArgs e)
+        {
+            close.Image = Properties.Resources.close;
+        }
+        private void close_Click(object sender, EventArgs e)
+        {
+            Close();
+        }
+        #endregion
+
+        #region Grabbable window
+        private void windowTop_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left)
+            {
+                ReleaseCapture();
+                SendMessage(Handle, WM_NCLBUTTONDOWN, HT_CAPTION, 0);
+            }
+        }
+        #endregion
+        #endregion
+
         // Drag & Drop
         private void tabMain_DragEnter(object sender, DragEventArgs e)
         {
@@ -112,10 +166,6 @@ namespace png2bclim
         }
 
         // User Experience
-        private void clickPreview(object sender, EventArgs e)
-        {
-            PB_BCLIM.BackColor = PB_BCLIM.BackColor == Color.Transparent ? Color.GreenYellow : Color.Transparent;
-        }
         private void dclickPreview(object sender, EventArgs e)
         {
             PB_BCLIM.BorderStyle = PB_BCLIM.BorderStyle == BorderStyle.FixedSingle ? BorderStyle.None : BorderStyle.FixedSingle;
@@ -125,6 +175,12 @@ namespace png2bclim
             System.Media.SystemSounds.Exclamation.Play();
             string msg = String.Join(Environment.NewLine + Environment.NewLine, lines);
             MessageBox.Show(msg, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            imgBackgroundColour.ShowDialog();
+            PB_BCLIM.BackColor = imgBackgroundColour.Color;
         }
     }
 }
