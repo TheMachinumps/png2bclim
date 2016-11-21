@@ -85,9 +85,8 @@ namespace png2bclim
         private void B_Open_Click(object sender, EventArgs e)
         {
             OpenFileDialog ofd = new OpenFileDialog();
-            if (ofd.ShowDialog() != DialogResult.OK) return;
-
-            openFile(TB_Path.Text = ofd.FileName);
+            if (ofd.ShowDialog() == DialogResult.OK)
+                openFile(TB_Path.Text = ofd.FileName);
         }
         private void openFile(string path)
         {
@@ -128,26 +127,40 @@ namespace png2bclim
             byte[] data = BCLIM.getBCLIM(path, CB_OutFormat.Text[0]);
 
             string fp = Path.GetFileNameWithoutExtension(path);
-            fp = "new_" + fp.Substring(fp.IndexOf('_') + 1);
+            fp = fp.Substring(fp.IndexOf('_') + 1) + " " + CB_OutFormat.Text.Substring(4);
             string pp = Path.GetDirectoryName(path);
-            string newPath = Path.Combine(pp, fp + ".bclim");
+            string newPath = Path.Combine(pp + "/" + fp + ".bclim");
 
             var sfd = new SaveFileDialog
             {
-                FileName = newPath,
+                FileName = fp + ".bclim",
                 InitialDirectory = pp,
                 Filter = "BCLIM File|*.bclim" +
                          "|All Files|*.*"
             };
-            if (CHK_AutoSaveBCLIM.Checked || (sfd.ShowDialog() == DialogResult.OK))
+            bool result;
+
+            if (CHK_AutoSaveBCLIM.Checked)
+            {
+                result = true;
+                sfd.FileName = newPath;
+            }
+            else
+                result = (sfd.ShowDialog() == DialogResult.OK);
+
+            if (CHK_AutoSaveBCLIM.Checked || (result))
                 File.WriteAllBytes(sfd.FileName, data);
 
-            PB_BCLIM.Image = new Bitmap(path);
-            var bclim = BCLIM.analyze(sfd.FileName);
-            showPaletteBox(bclim);
-            GB_Details.Visible = true;
-            L_Details.Text = String.Format("{1}{0}{2}{0}{3}{0}{4}{0}{5}", Environment.NewLine,
-                bclim.FileFormat, bclim.Width, bclim.Height, bclim.TileWidth, bclim.TileHeight);
+            if (result)
+            {
+                PB_BCLIM.Image = new Bitmap(path);
+                var bclim = BCLIM.analyze(sfd.FileName);
+                showPaletteBox(bclim);
+                GB_Details.Visible = true;
+                L_Details.Text = String.Format("{1}{0}{2}{0}{3}{0}{4}{0}{5}", Environment.NewLine,
+                    bclim.FileFormat, bclim.Width, bclim.Height, bclim.TileWidth, bclim.TileHeight);
+            }
+            
         }
         public void showPaletteBox(BCLIM.CLIM bclim)
         {
