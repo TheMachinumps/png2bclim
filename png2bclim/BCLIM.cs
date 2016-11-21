@@ -528,14 +528,14 @@ namespace CTR
                         case 12:
                             {
                                 byte val = (byte)(GetL8(c) / 0x11); // First Pix    // L4
-                                { c = img.GetPixel((int)x, (int)y); if (c.A == 0) c = Color.FromArgb(0, 0, 0, 0); }
+                                { c = img.GetPixel((int)x + 1, (int)y); if (c.A == 0) c = Color.FromArgb(0, 0, 0, 0); }
                                 val |= (byte)((GetL8(c) / 0x11) << 4); i++;
                                 bz.Write(val); break;
                             }
                         case 13:
                             {
                                 byte val = (byte)(GetA8(c) / 0x11); // First Pix    // L4
-                                { c = img.GetPixel((int)x, (int)y); }
+                                { c = img.GetPixel((int)x + 1, (int)y); }
                                 val |= (byte)((GetA8(c) / 0x11) << 4); i++;
                                 bz.Write(val); break;
                             }
